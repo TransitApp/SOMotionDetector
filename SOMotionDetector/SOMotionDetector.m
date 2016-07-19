@@ -137,7 +137,7 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
                 }
                 
                 // If type was changed, then call delegate method
-                if (self.motionType != self.previousMotionType) {
+                //if (self.motionType != self.previousMotionType) {
                     self.previousMotionType = self.motionType;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -147,9 +147,9 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 #pragma GCC diagnostic pop
                     
                     if (self.motionTypeChangedBlock) {
-                        self.motionTypeChangedBlock (self.motionType);
+                        self.motionTypeChangedBlock (_motionType, activity.confidence);
                     }
-                }
+                //}
             });
 
         }];
@@ -204,7 +204,7 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
     }
     
     // If type was changed, then call delegate method
-    if (self.motionType != self.previousMotionType) {
+   // if (self.motionType != self.previousMotionType) {
         self.previousMotionType = self.motionType;
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -216,10 +216,10 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 #pragma GCC diagnostic pop
             
             if (self.motionTypeChangedBlock) {
-                self.motionTypeChangedBlock (self.motionType);
+                self.motionTypeChangedBlock (_motionType, -1);
             }
         });
-    }
+    //}
 }
 
 - (void)detectShaking
