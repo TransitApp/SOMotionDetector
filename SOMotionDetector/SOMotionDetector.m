@@ -92,11 +92,11 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 {
     [[SOLocationManager sharedInstance] start];
     
-    self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f
-                                                                target:self
-                                                              selector:@selector(detectShaking)
-                                                              userInfo:Nil
-                                                               repeats:YES];
+//    self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f
+//                                                                target:self
+//                                                              selector:@selector(detectShaking)
+//                                                              userInfo:Nil
+//                                                               repeats:YES];
     
     [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init]
                                              withHandler:^(CMAccelerometerData *accelerometerData, NSError *error)
@@ -158,8 +158,8 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 
 - (void)stopDetection
 {
-    [self.shakeDetectingTimer invalidate];
-    self.shakeDetectingTimer = nil;
+//    [self.shakeDetectingTimer invalidate];
+//    self.shakeDetectingTimer = nil;
     
     [[SOLocationManager sharedInstance] stop];
     [self.motionManager stopAccelerometerUpdates];
