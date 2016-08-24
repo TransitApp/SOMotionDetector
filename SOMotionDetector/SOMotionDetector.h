@@ -62,14 +62,6 @@ typedef enum
 #pragma mark - Customization Methods
 
 /**
- * Set this parameter to YES if you want to use M7 chip to detect more exact motion type. By default is No.
- * Set this parameter before calling startDetection method.
- * Available only on devices that have M7 chip. At this time only the iPhone 5S, iPhone6/6plus, the iPad Air and iPad mini with retina display have the M7 coprocessor.
- */
-@property (nonatomic) BOOL useM7IfAvailable NS_AVAILABLE_IOS(7_0);
-
-
-/**
  *@param speed  The minimum speed value less than which will be considered as not moving state
  */
 - (void)setMinimumSpeed:(CGFloat)speed;

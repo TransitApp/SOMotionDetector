@@ -36,7 +36,6 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 @property (strong, nonatomic) NSTimer *shakeDetectingTimer;
 
 @property (strong, nonatomic) CLLocation *currentLocation;
-@property (nonatomic) SOMotionType previousMotionType;
 
 #pragma mark - Accelerometer manager
 @property (strong, nonatomic) CMMotionManager *motionManager;
@@ -90,27 +89,7 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 #pragma mark - Public Methods
 - (void)startDetection
 {
-    [[SOLocationManager sharedInstance] start];
-    
-    //    self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f
-    //                                                                target:self
-    //                                                              selector:@selector(detectShaking)
-    //                                                              userInfo:Nil
-    //                                                               repeats:YES];
-    
-    [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init]
-                                             withHandler:^(CMAccelerometerData *accelerometerData, NSError *error)
-     {
-         _acceleration = accelerometerData.acceleration;
-         [self calculateMotionType];
-         dispatch_async(dispatch_get_main_queue(), ^{
-             if (self.accelerationChangedBlock) {
-                 self.accelerationChangedBlock (self.acceleration);
-             }
-         });
-     }];
-    
-    if (self.useM7IfAvailable && [SOMotionDetector motionHardwareAvailable]) {
+    if ([SOMotionDetector motionHardwareAvailable]) {
         if (!self.motionActivityManager) {
             self.motionActivityManager = [[CMMotionActivityManager alloc] init];
         }
@@ -128,17 +107,33 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
                     _motionType = MotionTypeNotMoving;
                 }
                 
-                // If type was changed, then call delegate method
-                //if (self.motionType != self.previousMotionType) {
-                self.previousMotionType = self.motionType;
-                
                 if (self.motionTypeChangedBlock) {
                     self.motionTypeChangedBlock (_motionType, activity.confidence);
                 }
-                //}
             });
             
         }];
+    }
+    else {
+        [[SOLocationManager sharedInstance] start];
+        
+        //    self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f
+        //                                                                target:self
+        //                                                              selector:@selector(detectShaking)
+        //                                                              userInfo:Nil
+        //                                                               repeats:YES];
+        
+        [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init]
+                                                 withHandler:^(CMAccelerometerData *accelerometerData, NSError *error)
+         {
+             _acceleration = accelerometerData.acceleration;
+             [self calculateMotionType];
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 if (self.accelerationChangedBlock) {
+                     self.accelerationChangedBlock (self.acceleration);
+                 }
+             });
+         }];
     }
 }
 
@@ -175,10 +170,6 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 #pragma mark - Private Methods
 - (void)calculateMotionType
 {
-    if (self.useM7IfAvailable && [SOMotionDetector motionHardwareAvailable]) {
-        return;
-    }
-    
     if (_currentSpeed < kMinimumSpeed) {
         _motionType = MotionTypeNotMoving;
     } else if (_currentSpeed <= kMaximumWalkingSpeed) {
@@ -189,16 +180,11 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
         _motionType = MotionTypeAutomotive;
     }
     
-    // If type was changed, then call delegate method
-    // if (self.motionType != self.previousMotionType) {
-    self.previousMotionType = self.motionType;
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.motionTypeChangedBlock) {
             self.motionTypeChangedBlock (_motionType, -1);
         }
     });
-    //}
 }
 
 - (void)detectShaking
